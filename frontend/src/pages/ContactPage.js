@@ -1,0 +1,89 @@
+import { styled } from "@mui/material/styles";
+import { TextField, Button } from "@mui/material";
+import { useState } from "react";
+
+const StyledTextField = styled(TextField)`
+  .MuiInputBase-root {
+    background-color: #ffffff;
+  }
+  .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: #088395;
+  }
+  .MuiInputLabel-root.Mui-focused {
+    color: #088395;
+  }
+`;
+
+const StyledButton = styled(Button)({
+  background: "linear-gradient(45deg, #81F5C5 40%, #00FFCA 90%)",
+  border: 0,
+  borderRadius: 3,
+  boxShadow: "0 3px 5px 2px #D0F4E5",
+  color: "#030508",
+  fontWeight: "bold",
+  height: 48,
+  padding: "0 30px",
+});
+
+const ContactPage = () => {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [message, setMessage] = useState("");
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert(JSON.stringify({ name, email, mobile, message }, null, 2));
+  };
+  return (
+    <div className="contact-container">
+      <form onSubmit={handleSubmit}>
+        <div className="con-name-textfield">
+          <TextField
+            required
+            label="Name"
+            className="textfield"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+        <div className="con-email-container">
+          <TextField
+            required
+            label="Email"
+            type="email"
+            className="textfield"
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <div className="mob-container">
+          <TextField
+            required
+            label="Mobile Number"
+            className="textfield"
+            type="text"
+            onChange={(e) => setMobile(e.target.value)}
+          />
+        </div>
+        <div className="message-container">
+          <TextField
+            required
+            multiline
+            type="text"
+            rows={4}
+            label="Message"
+            className="textfield"
+            onChange={(e) => setMessage(e.target.value)}
+          />
+        </div>
+        <div className="con-btn">
+          <StyledButton type="submit" size="large">
+            Submit
+          </StyledButton>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default ContactPage;

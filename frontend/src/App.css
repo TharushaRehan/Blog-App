@@ -1,38 +1,142 @@
-.App {
+.home-content {
+  position: relative;
+  width: 100%;
+
+}
+
+.page-body {
+  max-width: 700px;
+  padding-top: 64px;
+}
+
+.body-content {
+  margin-left: 20%;
+  width: 800px;
+  height: 500px;
+}
+
+.welcome {
+  font-size: 80px;
+  font-family: Verdana;
+  font-weight: bold;
+}
+
+.login-form {
+  display: relative;
+  position: absolute;
+  z-index: 1;
+  top: 3%;
+  left: 1300px;
+  width: 450px;
+  height: 600px;
+  border: 1px solid #088395;
+  box-shadow: 0px 5px 10px #088395;
+  padding: 10px;
+  background-color: #F1F6F9;
+  border-radius: 25px;
+}
+
+.textfield {
+  width: 350px;
+  height: 20px;
+}
+
+.email-textfield {
+  margin-top: 15%;
+  margin-left: 10%;
+}
+
+.password-textfield {
+  margin-top: 15%;
+  margin-left: 10%;
+}
+
+#login-btn {
+  margin-top: 20%;
+  margin-left: 36.5%;
+}
+
+#signup-btn {
+  margin-top: 3%;
+  margin-left: 36%;
+}
+
+nav {
+  border-bottom: 4px solid black;
   text-align: center;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: white;
+  font-size: 20px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+nav li {
+  display: inline-block;
+  padding-top: 16px;
+  padding-bottom: 16px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+nav a {
+  text-decoration: none;
+  color: black;
+  font-weight: bold;
+  padding: 16px 32px;
+  transition: color 1s ease;
+  transition: background-color 0.8s ease;
+}
+
+nav a:hover {
+  background: black;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+h3,
+h1,
+h4 {
+  margin-bottom: 0;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.article-container h3,
+p {
+  color: #000;
+
+}
+
+.contact-container {
+  text-align: center;
+  position: fixed;
+  margin-top: 5%;
+  width: 100%;
+}
+
+.con-name-textfield {
+  margin-top: -0.5%;
+  margin-left: 1%;
+}
+
+.con-email-container {
+  margin-top: 4%;
+  margin-left: 1%;
+}
+
+.mob-container {
+  margin-top: 4%;
+  margin-left: 1%;
+}
+
+.message-container {
+  margin-top: 4%;
+  margin-left: 1%;
+}
+
+.con-btn {
+  margin-top: 9%;
+  margin-left: 1%;
 }
