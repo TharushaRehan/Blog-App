@@ -7,6 +7,8 @@ import ArticleListPage from "./pages/ArticlesListPage";
 import AboutPage from "./pages/AboutPage";
 import ContactPage from "./pages/ContactPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import CreateAccountPage from "./pages/CreateAccountPage";
+
 function App() {
   return (
     <BrowserRouter>
@@ -19,6 +21,7 @@ function App() {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/articles" element={<ArticleListPage />} />
             <Route path="/articles/:articleId" element={<ArticlePage />} />
+            <Route path="/create-account" element={<CreateAccountPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </div>

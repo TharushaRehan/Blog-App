@@ -2,8 +2,10 @@ import Box from "@mui/material/Box";
 import { TextField, Button } from "@mui/material";
 import { useState } from "react";
 import { styled } from "@mui/material/styles";
+import { Link, useNavigate } from "react-router-dom";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
-const StyledTextField = styled(TextField)`
+export const StyledTextField = styled(TextField)`
   .MuiInputBase-root {
     background-color: #ffffff;
   }
@@ -15,7 +17,7 @@ const StyledTextField = styled(TextField)`
   }
 `;
 
-const StyledButton = styled(Button)({
+export const StyledButton = styled(Button)({
   background: "linear-gradient(45deg, #81F5C5 40%, #00FFCA 90%)",
   border: 0,
   borderRadius: 3,
@@ -28,9 +30,17 @@ const StyledButton = styled(Button)({
 const HomePage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const handleSignUp = () => {
-    //window.location.href = "/custsignup";
+  const navigate = useNavigate();
+  const HandleLogIn = async (e) => {
+    e.preventDefault();
+    try {
+      await signInWithEmailAndPassword(getAuth(), email, password);
+      navigate("/articles");
+    } catch (e) {
+      setError(e.message);
+    }
   };
   return (
     <div className="home-content">
@@ -56,8 +66,12 @@ const HomePage = () => {
           }}
         >
           <p>
-            " Writing is the painting of the voice. Blogging is the gallery
-            where words come alive."
+            "{" "}
+            <i>
+              Writing is the painting of the voice. Blogging is the gallery
+              where words come alive.
+            </i>
+            "
           </p>
         </Box>
         <Box
@@ -82,7 +96,7 @@ const HomePage = () => {
           </p>
         </Box>
         <div className="login-form">
-          <form>
+          <form onSubmit={HandleLogIn}>
             <p style={{ fontSize: "30px", textAlign: "center" }}>Log In</p>
             <div className="email-textfield">
               <StyledTextField
@@ -105,22 +119,17 @@ const HomePage = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
+            {error && <p className="error">{error}</p>}
             <StyledButton id="login-btn" size="large" type="submit">
               Log In
             </StyledButton>
           </form>
-          <p
-            style={{
-              fontSize: "20px",
-              textAlign: "center",
-              paddingTop: "20px",
-            }}
-          >
-            Don't have an account ?
-          </p>
-          <StyledButton id="signup-btn" size="large" onClick={handleSignUp}>
-            Sign Up
-          </StyledButton>
+          <p id="checkAcc">Don't have an account ?</p>
+          <Link to="/create-account">
+            <StyledButton id="signup-btn" size="large">
+              Sign Up
+            </StyledButton>
+          </Link>
         </div>
       </div>
     </div>

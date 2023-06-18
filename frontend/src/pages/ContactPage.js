@@ -38,7 +38,7 @@ const ContactPage = () => {
     <div className="contact-container">
       <form onSubmit={handleSubmit}>
         <div className="con-name-textfield">
-          <TextField
+          <StyledTextField
             required
             label="Name"
             className="textfield"
@@ -48,7 +48,7 @@ const ContactPage = () => {
           />
         </div>
         <div className="con-email-container">
-          <TextField
+          <StyledTextField
             required
             label="Email"
             type="email"
@@ -57,7 +57,7 @@ const ContactPage = () => {
           />
         </div>
         <div className="mob-container">
-          <TextField
+          <StyledTextField
             required
             label="Mobile Number"
             className="textfield"
@@ -66,11 +66,11 @@ const ContactPage = () => {
           />
         </div>
         <div className="message-container">
-          <TextField
+          <StyledTextField
             required
             multiline
-            type="text"
             rows={4}
+            type="text"
             label="Message"
             className="textfield"
             onChange={(e) => setMessage(e.target.value)}

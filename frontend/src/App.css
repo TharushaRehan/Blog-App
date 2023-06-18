@@ -29,9 +29,9 @@
   left: 1300px;
   width: 450px;
   height: 600px;
+  padding: 10px;
   border: 1px solid #088395;
   box-shadow: 0px 5px 10px #088395;
-  padding: 10px;
   background-color: #F1F6F9;
   border-radius: 25px;
 }
@@ -52,13 +52,66 @@
 }
 
 #login-btn {
-  margin-top: 20%;
-  margin-left: 36.5%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  margin-top: 80px;
+}
+
+#checkAcc {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  margin-top: 150px;
+  font-size: 18px;
 }
 
 #signup-btn {
-  margin-top: 3%;
-  margin-left: 36%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  margin-top: 220px;
+}
+
+.error {
+  padding-top: 7%;
+  text-align: center;
+}
+
+.signup-form {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  margin-top: -2%;
+  border: 1px solid #088395;
+  box-shadow: 0px 5px 10px #088395;
+  background-color: #F1F6F9;
+  border-radius: 25px;
+  padding: 30px;
+}
+
+.signup-email {
+  margin-top: 15%;
+}
+
+.signup-password {
+  margin-top: 17%;
+}
+
+.signup-conf-password {
+  margin-top: 17%;
+}
+
+.signup-btn {
+  margin-top: 25%;
 }
 
 nav {
@@ -67,8 +120,9 @@ nav {
   position: fixed;
   top: 0;
   width: 100%;
-  background: white;
+  background: #C7F0DB;
   font-size: 20px;
+  z-index: 1;
 }
 
 nav ul {
@@ -97,46 +151,113 @@ nav a:hover {
   color: white;
 }
 
-h3,
-h1,
-h4 {
-  margin-bottom: 0;
+.article-item {
+  text-decoration: none;
+  color: black;
 }
 
-.article-container h3,
-p {
-  color: #000;
+.article-item-container {
+  border: 1px solid #088395;
+  width: 800px;
+  border-radius: 25px;
+  margin-top: 5%;
+  padding-left: 20px;
+  padding-right: 20px;
+  text-align: center;
+  transition: background-color 1s ease;
+}
 
+.article-item-container:hover {
+  background-color: #00FFCA;
+}
+
+.article-page {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+#show-upvote {
+  font-size: 22px;
+  color: #AE00FB;
+}
+
+.show-article {
+  position: relative;
+  border: 1px solid #088395;
+  box-shadow: 0px 5px 10px #088395;
+  background-color: #F1F6F9;
+  border-radius: 25px;
+  padding-left: 25px;
+  padding-right: 20px;
+  margin-top: 8%;
+  margin-left: 60%;
+  margin-bottom: 10%;
+  width: 1000px;
+}
+
+.comments-container {
+  margin-top: 5%;
+  padding-bottom: 2%;
+}
+
+.comment {
+  border-bottom: 2px solid black;
+  padding-top: 5px;
+}
+
+.add-comment-form {
+  margin-top: 4%;
+  border: 1px solid #e2e6e6;
+  border-radius: 25px;
+  box-shadow: 0px 5px 10px #ea3ef3;
+  background-color: #F1F6F9;
+  width: 500px;
+  padding-bottom: 30px;
+
+}
+
+.name-comment {
+  padding-left: 25px;
+  margin-top: 5%;
+}
+
+.text-comment {
+  padding-left: 25px;
+  margin-top: 11%;
+}
+
+.add-com-btn {
+  padding-left: 25px;
+  margin-top: 25%;
 }
 
 .contact-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   text-align: center;
-  position: fixed;
-  margin-top: 5%;
-  width: 100%;
 }
 
 .con-name-textfield {
-  margin-top: -0.5%;
-  margin-left: 1%;
+  margin-top: 0%;
 }
 
 .con-email-container {
-  margin-top: 4%;
-  margin-left: 1%;
+  margin-top: 16%;
 }
 
 .mob-container {
-  margin-top: 4%;
-  margin-left: 1%;
+  margin-top: 16%;
 }
 
 .message-container {
-  margin-top: 4%;
-  margin-left: 1%;
+  margin-top: 16%;
 }
 
 .con-btn {
-  margin-top: 9%;
-  margin-left: 1%;
+  margin-top: 50%;
 }
