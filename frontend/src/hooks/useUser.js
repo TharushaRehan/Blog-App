@@ -6,11 +6,12 @@ const useUser = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const unSubscribe = onAuthStateChanged(getAuth(), (user) => {
+    const unsubscribe = onAuthStateChanged(getAuth(), (user) => {
       setUser(user);
       setIsLoading(false);
+      console.log(user.uid);
     });
-    return unSubscribe;
+    return unsubscribe();
   }, []);
 
   return { user, isLoading };

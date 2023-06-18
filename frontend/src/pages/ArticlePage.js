@@ -24,24 +24,41 @@ const StyledButton = styled(Button)({
   padding: "0 30px",
 });
 const ArticlePage = () => {
-  const [articleInfo, setArticleInfor] = useState({ upvotes: 0, comments: [] });
-  const params = useParams();
-  const articleId = params.articleId;
+  const [articleInfo, setArticleInfor] = useState({
+    upvotes: 0,
+    comments: [],
+    canUpvote: false,
+  });
+  const { canUpvote } = articleInfo;
+  const { articleId } = useParams();
   const { user, isLoading } = useUser();
 
   useEffect(() => {
     const loadArticleInfo = async () => {
-      const response = await axios.get(`/api/articles/${articleId}`);
+      const token = user && (await user.getIdToken());
+      const headers = token ? { authtoken: token } : {};
+      const response = await axios.get(`/api/articles/${articleId}`, {
+        headers,
+      });
       const newArticleInfo = response.data;
       setArticleInfor(newArticleInfo);
     };
-    loadArticleInfo();
-  }, []);
+
+    if (isLoading) {
+      loadArticleInfo();
+    }
+  }, [isLoading, user]);
 
   const article = articles.find((article) => article.name === articleId);
 
   const addVote = async () => {
-    const response = await axios.put(`/api/articles/${articleId}/upvote`);
+    const token = user && (await user.getIdToken());
+    const headers = token ? { authtoken: token } : {};
+    const response = await axios.put(
+      `/api/articles/${articleId}/upvote`,
+      null,
+      { headers }
+    );
     const updatedArticle = response.data;
     setArticleInfor(updatedArticle);
   };
@@ -64,14 +81,8 @@ const ArticlePage = () => {
             size="large"
             onClick={addVote}
           >
-            Like
+            {canUpvote ? "Like" : "Already Liked"}
           </StyledButton>
-          <AddCommentForm
-            articleName={articleId}
-            onArticleUpdated={(updatedArticle) =>
-              setArticleInfor(updatedArticle)
-            }
-          />
         </>
       ) : (
         <Link to="/">
@@ -80,26 +91,31 @@ const ArticlePage = () => {
             size="medium"
             startIcon={<LogInIcon />}
           >
-            Log In to Like and comment
+            Log In to Like
           </StyledButton>
         </Link>
       )}
-      {/* <br />
       <br />
-      {user ? (
-        <AddCommentForm
-          articleName={articleId}
-          onArticleUpdated={(updatedArticle) => setArticleInfor(updatedArticle)}
-        />
-      ) : (
-        <StyledButton
-          variant="outlined"
-          startIcon={<LogInIcon />}
-          size="medium"
-        >
-          Log In to add a comment
-        </StyledButton>
-      )} */}
+      <br />
+      {user !==
+      (
+        <>
+          <AddCommentForm
+            articleName={articleId}
+            onArticleUpdated={(updatedArticle) =>
+              setArticleInfor(updatedArticle)
+            }
+          />
+
+          <StyledButton
+            variant="outlined"
+            startIcon={<LogInIcon />}
+            size="medium"
+          >
+            Log In to add a comment
+          </StyledButton>
+        </>
+      )}
       <CommentsList comments={articleInfo.comments} />
     </div>
   );

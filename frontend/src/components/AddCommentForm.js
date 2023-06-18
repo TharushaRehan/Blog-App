@@ -3,6 +3,7 @@ import axios from "axios";
 import { StyledTextField } from "../pages/HomePage";
 import { Button } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import useUser from "../hooks/useUser";
 
 const StyledButton = styled(Button)({
   background: "linear-gradient(45deg, #fe78fb 40%, #fe17fa 90%)",
@@ -18,15 +19,21 @@ const StyledButton = styled(Button)({
 const AddCommentForm = ({ articleName, onArticleUpdated }) => {
   const [name, setName] = useState("");
   const [comment, setComment] = useState("");
+  const [email, setEmail] = useState("");
+  const { user } = useUser();
 
   const AddComment = async () => {
-    if (name.length !== 0 && comment.length !== 0) {
+    if (comment.length !== 0) {
+      //setEmail({user.email})
+      const token = user && (await user.getIdToken());
+      const headers = token ? { authtoken: token } : {};
       const response = await axios.post(
         `/api/articles/${articleName}/comments`,
         {
-          postedBy: name,
+          postedBy: { name },
           text: comment,
-        }
+        },
+        { headers }
       );
       const updatedArticle = response.data;
       onArticleUpdated(updatedArticle);
@@ -36,16 +43,14 @@ const AddCommentForm = ({ articleName, onArticleUpdated }) => {
   };
   return (
     <div className="add-comment-form">
-      <div className="name-comment">
-        <StyledTextField
-          required
-          type="text"
-          className="textfield"
-          label="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </div>
+      {user !==
+      (
+        <p
+          style={{ paddingLeft: "25px", marginTop: "30px", fontWeight: "bold" }}
+        >
+          Your are posting as {user.email}
+        </p>
+      )}
       <div className="text-comment">
         <StyledTextField
           required

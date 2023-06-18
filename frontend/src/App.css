@@ -82,6 +82,7 @@
 .error {
   padding-top: 7%;
   text-align: center;
+  color: red;
 }
 
 .signup-form {
@@ -149,6 +150,12 @@ nav a {
 nav a:hover {
   background: black;
   color: white;
+}
+
+.nav-right {
+  position: absolute;
+  top: 8px;
+  right: 8px;
 }
 
 .article-item {
@@ -219,14 +226,9 @@ nav a:hover {
 
 }
 
-.name-comment {
-  padding-left: 25px;
-  margin-top: 5%;
-}
-
 .text-comment {
   padding-left: 25px;
-  margin-top: 11%;
+  margin-top: 8%;
 }
 
 .add-com-btn {
