@@ -10,7 +10,7 @@ const useUser = () => {
       setUser(user);
       setIsLoading(false);
     });
-    return unsubscribe();
+    return unsubscribe;
   }, []);
 
   return { user, isLoading };

@@ -4,22 +4,22 @@ import { StyledTextField } from "../pages/HomePage";
 import { Button } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import useUser from "../hooks/useUser";
+import Icon from "@mui/icons-material/Comment";
 
 const StyledButton = styled(Button)({
-  background: "linear-gradient(45deg, #fe78fb 40%, #fe17fa 90%)",
+  background: "linear-gradient(45deg, #81F5C5 40%, #00FFCA 90%)",
   border: 0,
   borderRadius: 3,
   boxShadow: "0 3px 5px 2px #D0F4E5",
   color: "#030508",
   fontWeight: "bold",
+  textTransform: "capitalize",
   height: 48,
   padding: "0 30px",
 });
 
 const AddCommentForm = ({ articleName, onArticleUpdated }) => {
-  const [name, setName] = useState("");
   const [comment, setComment] = useState("");
-  const [email, setEmail] = useState("");
   const { user } = useUser();
 
   const AddComment = async () => {
@@ -30,14 +30,12 @@ const AddCommentForm = ({ articleName, onArticleUpdated }) => {
       const response = await axios.post(
         `/api/articles/${articleName}/comments`,
         {
-          postedBy: { name },
           text: comment,
         },
         { headers }
       );
       const updatedArticle = response.data;
       onArticleUpdated(updatedArticle);
-      setName("");
       setComment("");
     }
   };
@@ -65,7 +63,7 @@ const AddCommentForm = ({ articleName, onArticleUpdated }) => {
         />
       </div>
       <div className="add-com-btn">
-        <StyledButton size="large" onClick={AddComment}>
+        <StyledButton size="large" onClick={AddComment} startIcon={<Icon />}>
           Add Comment
         </StyledButton>
       </div>

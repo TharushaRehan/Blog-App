@@ -1,59 +1,70 @@
+import axios from "axios";
+import { useState } from "react";
 import { StyledTextField, StyledButton } from "./HomePage";
+import useUser from "../hooks/useUser";
 
 const AddArticlePage = () => {
-  const handleSubmit = (e) => {
+  const [name, setName] = useState("");
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const { user } = useUser();
+  const [msg, setMsg] = useState("");
+
+  const handleAddArticle = async (e) => {
     e.preventDefault();
-    //alert(JSON.stringify({ name, email, mobile, message }, null, 2));
+    const token = user && (await user.getIdToken());
+    const headers = token ? { authtoken: token } : {};
+    const response = await axios.post(
+      `/api/articles/addarticle`,
+      {
+        name,
+        title,
+        content,
+      },
+      { headers }
+    );
+    const msg = response.data;
+    console.log(msg);
   };
   return (
     <div className="contact-container">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleAddArticle}>
         <p style={{ fontSize: "30px" }}>Add My Article</p>
         <div className="con-name-textfield">
           <StyledTextField
             required
-            label="Name"
-            className="textfield"
+            label="Article Name"
+            className="article-textfield"
             type="text"
-            // value={name}
-            // onChange={(e) => setName(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
         </div>
         <div className="con-email-container">
           <StyledTextField
             required
-            label="Email"
-            type="email"
-            className="textfield"
-            // value={email}
-            // onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div className="mob-container">
-          <StyledTextField
-            required
-            label="Mobile Number"
-            className="textfield"
+            label="Article Title"
             type="text"
-            // value={mobile}
-            // onChange={(e) => setMobile(e.target.value)}
+            className="article-textfield"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
           />
         </div>
         <div className="message-container">
           <StyledTextField
             required
             multiline
-            rows={4}
+            rows={10}
             type="text"
-            label="Message"
-            className="textfield"
-            // value={message}
-            // onChange={(e) => setMessage(e.target.value)}
+            label="Article Content"
+            className="article-textfield"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
           />
         </div>
-        <div className="con-btn">
+        <div className="article-btn">
           <StyledButton type="submit" size="large">
-            Submit
+            Add article
           </StyledButton>
         </div>
       </form>

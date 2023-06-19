@@ -6,7 +6,6 @@ import Button from "@mui/material/Button";
 import FavIcon from "@mui/icons-material/Favorite";
 import LogInIcon from "@mui/icons-material/Login";
 import axios from "axios";
-import articles from "./article-content";
 import NotFoundPage from "./NotFoundPage";
 import CommentsList from "../components/CommentsList";
 import useUser from "../hooks/useUser";
@@ -32,25 +31,33 @@ const ArticlePage = () => {
   const { canUpvote } = articleInfo;
   const { articleId } = useParams();
   const { user, isLoading } = useUser();
-
+  const [statusCode, setStatusCode] = useState(null);
   useEffect(() => {
     const loadArticleInfo = async () => {
       const token = user && (await user.getIdToken());
       const headers = token ? { authtoken: token } : {};
-      const response = await axios.get(`/api/articles/${articleId}`, {
-        headers,
-      });
-      const newArticleInfo = response.data;
-      setArticleInfor(newArticleInfo);
+      try {
+        const response = await axios.get(`/api/articles/${articleId}`, {
+          headers: headers,
+        });
+        const newArticleInfo = response.data;
+        setArticleInfor(newArticleInfo);
+      } catch (error) {
+        if (error.response.status === 404) {
+          setStatusCode(404);
+          return;
+        }
+      }
     };
 
-    if (isLoading) {
+    if (!isLoading) {
       loadArticleInfo();
     }
-  }, [user]);
+  }, [isLoading, user, articleInfo.upvotes]);
 
-  const article = articles.find((article) => article.name === articleId);
-
+  if (statusCode === 404) {
+    return <NotFoundPage />;
+  }
   const addVote = async () => {
     const token = user && (await user.getIdToken());
     const headers = token ? { authtoken: token } : {};
@@ -62,16 +69,19 @@ const ArticlePage = () => {
     const updatedArticle = response.data;
     setArticleInfor(updatedArticle);
   };
+  const addLineBreaks = (content) => {
+    if (!content) {
+      return [];
+    }
+    return content.split("\n");
+  };
 
-  if (!article) {
-    return <NotFoundPage />;
-  }
   return (
     <div className="show-article">
-      <h1>{article.title}</h1>
+      <h1>{articleInfo.title}</h1>
       <p id="show-upvote">This article has {articleInfo.upvotes} like(s)</p>
-      {article.content.map((paragraph, index) => (
-        <p key={index}>{paragraph}</p>
+      {addLineBreaks(articleInfo.content).map((line, index) => (
+        <p key={index}>{line}</p>
       ))}
       {user ? (
         <>
@@ -81,7 +91,7 @@ const ArticlePage = () => {
             size="large"
             onClick={addVote}
           >
-            {canUpvote ? "Like" : "Already Liked"}
+            {canUpvote ? "Already Liked" : " Like"}
           </StyledButton>
         </>
       ) : (
