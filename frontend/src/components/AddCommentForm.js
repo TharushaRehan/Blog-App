@@ -43,13 +43,14 @@ const AddCommentForm = ({ articleName, onArticleUpdated }) => {
   };
   return (
     <div className="add-comment-form">
-      {user !==
-      (
+      {user ? (
         <p
           style={{ paddingLeft: "25px", marginTop: "30px", fontWeight: "bold" }}
         >
           Your are posting as {user.email}
         </p>
+      ) : (
+        <p></p>
       )}
       <div className="text-comment">
         <StyledTextField

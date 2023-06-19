@@ -14,6 +14,7 @@ app.use(express.json());
 //middleware
 app.use(async (req, res, next) => {
   const { authtoken } = req.headers;
+
   if (authtoken) {
     try {
       req.user = await admin.auth().verifyIdToken(authtoken);
@@ -31,9 +32,11 @@ app.get("/api/articles/:name", async (req, res) => {
   const { uid } = req.user;
 
   const article = await db.collection("articles").findOne({ name });
+  //console.log(article);
   if (article) {
     const upvoteIds = article.upvoteIds || [];
-    article.canUpvote = uid && !upvoteIds.includes(uid);
+    article.canUpvote = uid && !article.upvoteIds.includes(uid);
+    //console.log(article.canUpvote);
     res.json(article);
   } else {
     res.sendStatus(404);

@@ -9,7 +9,7 @@ export const StyledButton = styled(Button)({
   background: "linear-gradient(45deg, #81F5C5 40%, #00FFCA 90%)",
   border: 0,
   borderRadius: 3,
-  boxShadow: "0 3px 5px 2px #D0F4E5",
+  boxShadow: "0 3px 5px 2px #47A992",
   color: "#030508",
   fontSize: "20px",
   width: 250,
@@ -28,14 +28,26 @@ const CreateAccountPage = () => {
   const HandleCreateAcc = async (e) => {
     e.preventDefault();
     if (password === confirmPassword) {
-      try {
-        await createUserWithEmailAndPassword(getAuth(), email, password);
-        navigate("/articles");
-      } catch (e) {
-        setError(e.message);
+      if (password.length <= 5) {
+        setError("Password must have atleast 6 characters.");
+        setPassword("");
+        setConfirmPassword("");
+      } else {
+        try {
+          await createUserWithEmailAndPassword(getAuth(), email, password);
+          navigate("/articles");
+        } catch (e) {
+          if (e.message === "Firebase: Error (auth/email-already-in-use).")
+            setError("Already have an account");
+          setEmail("");
+          setPassword("");
+          setConfirmPassword("");
+        }
       }
     } else {
       setError("Password do not match.");
+      setPassword("");
+      setConfirmPassword("");
       return;
     }
   };
@@ -75,7 +87,7 @@ const CreateAccountPage = () => {
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
         </div>
-        {error && <p className="error">{error}</p>}
+        {error && <p style={{ paddingTop: "20px", color: "red" }}>{error}</p>}
         <div className="signup-btn">
           <StyledButton size="large" type="submit">
             Create Account

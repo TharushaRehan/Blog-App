@@ -16,7 +16,7 @@ const StyledButton = styled(Button)({
   background: "linear-gradient(45deg, #81F5C5 40%, #00FFCA 90%)",
   border: 0,
   borderRadius: 3,
-  boxShadow: "0 3px 5px 2px #D0F4E5",
+  boxShadow: "0 3px 5px 2px #47A992",
   color: "#030508",
   fontWeight: "bold",
   textTransform: "capitalize",
@@ -47,7 +47,7 @@ const ArticlePage = () => {
     if (isLoading) {
       loadArticleInfo();
     }
-  }, [isLoading, user]);
+  }, [user]);
 
   const article = articles.find((article) => article.name === articleId);
 
@@ -97,16 +97,13 @@ const ArticlePage = () => {
       )}
       <br />
       <br />
-      {user !==
-      (
-        <>
-          <AddCommentForm
-            articleName={articleId}
-            onArticleUpdated={(updatedArticle) =>
-              setArticleInfor(updatedArticle)
-            }
-          />
-
+      {user ? (
+        <AddCommentForm
+          articleName={articleId}
+          onArticleUpdated={(updatedArticle) => setArticleInfor(updatedArticle)}
+        />
+      ) : (
+        <Link to="/">
           <StyledButton
             variant="outlined"
             startIcon={<LogInIcon />}
@@ -114,7 +111,7 @@ const ArticlePage = () => {
           >
             Log In to add a comment
           </StyledButton>
-        </>
+        </Link>
       )}
       <CommentsList comments={articleInfo.comments} />
     </div>

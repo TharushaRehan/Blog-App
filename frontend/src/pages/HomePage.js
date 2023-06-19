@@ -21,7 +21,7 @@ export const StyledButton = styled(Button)({
   background: "linear-gradient(45deg, #81F5C5 40%, #00FFCA 90%)",
   border: 0,
   borderRadius: 3,
-  boxShadow: "0 3px 5px 2px #D0F4E5",
+  boxShadow: "0 3px 5px 2px #47A992",
   color: "#030508",
   fontWeight: "bold",
   height: 48,
@@ -39,7 +39,7 @@ const HomePage = () => {
       await signInWithEmailAndPassword(getAuth(), email, password);
       navigate("/articles");
     } catch (e) {
-      setError(e.message);
+      setError("Inavild Email or Password");
     }
   };
   return (

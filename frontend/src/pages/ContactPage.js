@@ -18,7 +18,7 @@ const StyledButton = styled(Button)({
   background: "linear-gradient(45deg, #81F5C5 40%, #00FFCA 90%)",
   border: 0,
   borderRadius: 3,
-  boxShadow: "0 3px 5px 2px #D0F4E5",
+  boxShadow: "0 5px 5px 3px #47A992",
   color: "#030508",
   fontWeight: "bold",
   height: 48,
@@ -37,6 +37,7 @@ const ContactPage = () => {
   return (
     <div className="contact-container">
       <form onSubmit={handleSubmit}>
+        <p style={{ fontSize: "30px" }}>Contact Us</p>
         <div className="con-name-textfield">
           <StyledTextField
             required
@@ -53,6 +54,7 @@ const ContactPage = () => {
             label="Email"
             type="email"
             className="textfield"
+            value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
@@ -62,6 +64,7 @@ const ContactPage = () => {
             label="Mobile Number"
             className="textfield"
             type="text"
+            value={mobile}
             onChange={(e) => setMobile(e.target.value)}
           />
         </div>
@@ -73,6 +76,7 @@ const ContactPage = () => {
             type="text"
             label="Message"
             className="textfield"
+            value={message}
             onChange={(e) => setMessage(e.target.value)}
           />
         </div>
