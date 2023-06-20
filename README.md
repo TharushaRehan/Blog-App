@@ -9,3 +9,5 @@ Functionalities
 3. Like the articles (Only for Logged In users)
 4. Add comments to the articles (Only for Logged In users)
 5. Add content to the app (Only for Logged In users)
+
+![Screenshot (334)](https://github.com/TharushaRehan/Blog-App/assets/101706353/5caf639c-30ed-460a-a0f3-162479144121 | width=200)
