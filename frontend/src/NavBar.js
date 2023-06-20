@@ -3,7 +3,8 @@ import useUser from "./hooks/useUser";
 import { getAuth, signOut } from "firebase/auth";
 import { Button } from "@mui/material";
 import { styled } from "@mui/material/styles";
-
+import LogInIcon from "@mui/icons-material/Login";
+import LogOutIcon from "@mui/icons-material/Logout";
 export const StyledButton = styled(Button)({
   background: "linear-gradient(45deg, #81F5C5 40%, #00FFCA 90%)",
   border: 0,
@@ -37,17 +38,21 @@ const NavBar = () => {
       <div className="nav-right">
         {user ? (
           <StyledButton
+            variant="outlined"
             onClick={() => {
               signOut(getAuth());
             }}
+            endIcon={<LogOutIcon />}
           >
             Log Out
           </StyledButton>
         ) : (
           <StyledButton
+            variant="outlined"
             onClick={() => {
               navigate("/");
             }}
+            endIcon={<LogInIcon />}
           >
             Log In
           </StyledButton>

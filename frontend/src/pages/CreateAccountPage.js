@@ -25,6 +25,9 @@ const CreateAccountPage = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  /* run the function when user click on create account button
+  first check if the given passwords are matching, if yes check password has atleast 6 characters,
+  then create a user with the given email and password and navigate to article page */
   const HandleCreateAcc = async (e) => {
     e.preventDefault();
     if (password === confirmPassword) {
@@ -89,7 +92,7 @@ const CreateAccountPage = () => {
         </div>
         {error && <p style={{ paddingTop: "20px", color: "red" }}>{error}</p>}
         <div className="signup-btn">
-          <StyledButton size="large" type="submit">
+          <StyledButton size="large" type="submit" variant="outlined">
             Create Account
           </StyledButton>
         </div>

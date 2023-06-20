@@ -1,7 +1,7 @@
 import { styled } from "@mui/material/styles";
 import { TextField, Button } from "@mui/material";
 import { useState } from "react";
-
+import Icon from "@mui/icons-material/ArrowUpward";
 const StyledTextField = styled(TextField)`
   .MuiInputBase-root {
     background-color: #ffffff;
@@ -81,7 +81,12 @@ const ContactPage = () => {
           />
         </div>
         <div className="con-btn">
-          <StyledButton type="submit" size="large">
+          <StyledButton
+            type="submit"
+            size="large"
+            endIcon={<Icon />}
+            variant="outlined"
+          >
             Submit
           </StyledButton>
         </div>

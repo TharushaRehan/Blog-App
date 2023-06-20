@@ -20,11 +20,12 @@ const StyledButton = styled(Button)({
 
 const AddCommentForm = ({ articleName, onArticleUpdated }) => {
   const [comment, setComment] = useState("");
+  const [msg, setMsg] = useState("");
   const { user } = useUser();
 
   const AddComment = async () => {
     if (comment.length !== 0) {
-      //setEmail({user.email})
+      setMsg("");
       const token = user && (await user.getIdToken());
       const headers = token ? { authtoken: token } : {};
       const response = await axios.post(
@@ -37,6 +38,8 @@ const AddCommentForm = ({ articleName, onArticleUpdated }) => {
       const updatedArticle = response.data;
       onArticleUpdated(updatedArticle);
       setComment("");
+    } else {
+      setMsg("Enter the comment");
     }
   };
   return (
@@ -62,6 +65,9 @@ const AddCommentForm = ({ articleName, onArticleUpdated }) => {
           onChange={(e) => setComment(e.target.value)}
         />
       </div>
+      <p style={{ paddingLeft: "25px", paddingTop: "110px", color: "red" }}>
+        {msg}
+      </p>
       <div className="add-com-btn">
         <StyledButton size="large" onClick={AddComment} startIcon={<Icon />}>
           Add Comment

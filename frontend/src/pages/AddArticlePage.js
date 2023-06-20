@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { StyledTextField, StyledButton } from "./HomePage";
 import useUser from "../hooks/useUser";
-
+import AddIcon from "@mui/icons-material/Add";
 const AddArticlePage = () => {
   const [name, setName] = useState("");
   const [title, setTitle] = useState("");
@@ -10,6 +10,9 @@ const AddArticlePage = () => {
   const { user } = useUser();
   const [msg, setMsg] = useState("");
 
+  /*Run this function after user click on add article button
+  get the current user's data and make a post request to the backend with the given article details
+  get the recieved msg from the server and display it*/
   const handleAddArticle = async (e) => {
     e.preventDefault();
     const token = user && (await user.getIdToken());
@@ -23,14 +26,16 @@ const AddArticlePage = () => {
       },
       { headers }
     );
-    const msg = response.data;
-    console.log(msg);
+    const data = response.data;
+    console.log(data);
+    setMsg(data);
+    //console.log(msg);
   };
   return (
-    <div className="contact-container">
+    <div className="addArticle-container">
       <form onSubmit={handleAddArticle}>
         <p style={{ fontSize: "30px" }}>Add My Article</p>
-        <div className="con-name-textfield">
+        <div className="article-name-container">
           <StyledTextField
             required
             label="Article Name"
@@ -40,7 +45,7 @@ const AddArticlePage = () => {
             onChange={(e) => setName(e.target.value)}
           />
         </div>
-        <div className="con-email-container">
+        <div className="article-title-container">
           <StyledTextField
             required
             label="Article Title"
@@ -50,7 +55,7 @@ const AddArticlePage = () => {
             onChange={(e) => setTitle(e.target.value)}
           />
         </div>
-        <div className="message-container">
+        <div className="article-content-container">
           <StyledTextField
             required
             multiline
@@ -62,11 +67,16 @@ const AddArticlePage = () => {
             onChange={(e) => setContent(e.target.value)}
           />
         </div>
-        <div className="article-btn">
-          <StyledButton type="submit" size="large">
-            Add article
-          </StyledButton>
-        </div>
+        <p className="add-msg">{msg}</p>
+
+        <StyledButton
+          type="submit"
+          size="large"
+          variant="outlined"
+          startIcon={<AddIcon />}
+        >
+          Add article
+        </StyledButton>
       </form>
     </div>
   );

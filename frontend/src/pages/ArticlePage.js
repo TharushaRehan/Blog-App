@@ -13,6 +13,7 @@ import AddCommentForm from "../components/AddCommentForm";
 
 const StyledButton = styled(Button)({
   background: "linear-gradient(45deg, #81F5C5 40%, #00FFCA 90%)",
+  variant: "outlined",
   border: 0,
   borderRadius: 3,
   boxShadow: "0 3px 5px 2px #47A992",
@@ -32,6 +33,8 @@ const ArticlePage = () => {
   const { articleId } = useParams();
   const { user, isLoading } = useUser();
   const [statusCode, setStatusCode] = useState(null);
+
+  /*Run this every time the values of user,isloading,upvotes changes*/
   useEffect(() => {
     const loadArticleInfo = async () => {
       const token = user && (await user.getIdToken());
@@ -55,9 +58,11 @@ const ArticlePage = () => {
     }
   }, [isLoading, user, articleInfo.upvotes]);
 
+  /*If user go to invalid article page display the not found page */
   if (statusCode === 404) {
     return <NotFoundPage />;
   }
+  /*function to add likes to a article */
   const addVote = async () => {
     const token = user && (await user.getIdToken());
     const headers = token ? { authtoken: token } : {};
@@ -69,6 +74,8 @@ const ArticlePage = () => {
     const updatedArticle = response.data;
     setArticleInfor(updatedArticle);
   };
+
+  /*Add new lines if we found '\n' in the article content */
   const addLineBreaks = (content) => {
     if (!content) {
       return [];

@@ -28,6 +28,7 @@ app.use(async (req, res, next) => {
   next();
 });
 
+/*get all the article details from the mongodb database and send it to the frontend */
 app.get("/api/articles/getall", async (req, res) => {
   const allArticles = await db.collection("articles").find().toArray();
   if (allArticles) {
@@ -37,12 +38,13 @@ app.get("/api/articles/getall", async (req, res) => {
   }
 });
 
+/* return the article data to the frontend if that exists */
 app.get("/api/articles/:name", async (req, res) => {
   const { name } = req.params;
   const { uid } = req.user;
-
+  //check if there is a article with the given name
+  // if yes check the sign in user can like the article or not
   const article = await db.collection("articles").findOne({ name });
-
   if (article) {
     const upvoteIds = await db
       .collection("articles")
@@ -55,6 +57,8 @@ app.get("/api/articles/:name", async (req, res) => {
   }
 });
 
+// middleware
+// check if there is signed in user, if yes, the make that other api requests available
 app.use((req, res, next) => {
   if (req.user) {
     next();
@@ -63,6 +67,9 @@ app.use((req, res, next) => {
   }
 });
 
+/* update likes for the article
+first check if the signed in user's id is already in likes array
+if not increase the likes by 1 and add the user's uid to the array */
 app.put("/api/articles/:name/upvote", async (req, res) => {
   const { name } = req.params;
   const { uid } = req.user;
@@ -92,6 +99,8 @@ app.put("/api/articles/:name/upvote", async (req, res) => {
   }
 });
 
+/* add comments to the article
+add the recieved comment to the database with the user's email address */
 app.post("/api/articles/:name/comments", async (req, res) => {
   const { name } = req.params;
   const { text } = req.body;
@@ -124,8 +133,11 @@ const articleSchema = new mongoose.Schema({
 });
 const Article = mongoose.model("Article", articleSchema);
 
+/* add articles to the database
+get the recieved data from the frontend, create new object from the article model with the data
+by default likes,comments will be set to default values 
+then insert to the database*/
 app.post("/api/articles/addarticle", async (req, res) => {
-  //res.send("Hey");
   const { name, title, content } = req.body;
   const { uid } = req.user;
 
@@ -138,7 +150,7 @@ app.post("/api/articles/addarticle", async (req, res) => {
 
   try {
     await db.collection("articles").insertOne(newArticle);
-    res.json({ message: "Article saved successfully" });
+    res.send("Article saved successfully");
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to save article" });

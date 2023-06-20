@@ -235,7 +235,7 @@ nav a:hover {
 
 .add-com-btn {
   padding-left: 25px;
-  margin-top: 25%;
+  margin-top: 5%;
 }
 
 /*Contact Page Styles*/
@@ -291,12 +291,36 @@ nav a:hover {
   font-size: 18px;
 }
 
+.addArticle-container {
+  position: absolute;
+  text-align: center;
+  margin-top: 2%;
+  margin-left: 36%;
+  padding-bottom: 5%;
+  border: 1px solid #088395;
+  border-radius: 25px;
+  box-shadow: 0px 5px 10px #088395;
+  background-color: #F1F6F9;
+  padding: 25px;
+}
 
 .article-textfield {
   width: 500px;
   height: 20px;
 }
 
-.article-btn {
-  margin-top: 60%;
+.article-name-container {
+  padding-bottom: 70px;
+}
+
+.article-title-container {
+  padding-bottom: 70px;
+}
+
+.article-content-container {
+  padding-bottom: 250px;
+}
+
+.add-msg {
+  padding-bottom: 20px;
 }

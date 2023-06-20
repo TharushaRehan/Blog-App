@@ -1,9 +1,10 @@
 import Box from "@mui/material/Box";
 import { TextField, Button } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import { Link, useNavigate } from "react-router-dom";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import LogInIcon from "@mui/icons-material/Login";
 
 export const StyledTextField = styled(TextField)`
   .MuiInputBase-root {
@@ -31,8 +32,28 @@ const HomePage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
+  const [currentQuote, setCurrentQuote] = useState(0);
+  const quotes = [
+    "Writing is the painting of the voice. Blogging is the gallery where words come alive.",
+    "Words have the power to inspire, inform, and ignite change. Through blogging, we weave stories that connect, educate, and empower the world.",
+    "Blogging is the art of sharing thoughts, experiences, and ideas with the world. It's a journey of self-expression that has the potential to create a profound impact on others.",
+    "Behind every great blog is a passionate writer who fearlessly pours their heart and soul into every word, leaving a lasting imprint on readers around the globe.",
+  ];
   const navigate = useNavigate();
+
+  /*To change the quote after every 5 seconds*/
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentQuote((currentQuote) => (currentQuote + 1) % quotes.length);
+    }, 5000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  /*Handle the user login when user click on the login button
+  if success navigate to the articles page else display an error */
   const HandleLogIn = async (e) => {
     e.preventDefault();
     try {
@@ -50,8 +71,8 @@ const HomePage = () => {
         </div>
         <Box
           sx={{
-            width: 550,
-            height: 180,
+            width: 750,
+            height: 200,
             marginTop: -5,
             fontWeight: "bold",
             paddingLeft: "15px",
@@ -59,26 +80,18 @@ const HomePage = () => {
             paddingBottom: "10px",
             fontSize: "30px",
             borderRadius: "25px",
-            transition: "background-color 0.8s ease",
-            "&:hover": {
-              background: "#00FFCA",
-            },
+            backgroundColor: "#00FFCA",
           }}
         >
           <p>
-            "{" "}
-            <i>
-              Writing is the painting of the voice. Blogging is the gallery
-              where words come alive.
-            </i>
-            "
+            " <i>{quotes[currentQuote]}</i>"
           </p>
         </Box>
         <Box
           sx={{
             width: 1000,
             height: 230,
-            marginTop: "30px",
+            marginTop: "50px",
             padding: "10px",
             fontFamily: "Garamond",
             fontSize: "30px",
@@ -120,13 +133,19 @@ const HomePage = () => {
               />
             </div>
             {error && <p className="error">{error}</p>}
-            <StyledButton id="login-btn" size="large" type="submit">
+            <StyledButton
+              id="login-btn"
+              size="large"
+              type="submit"
+              endIcon={<LogInIcon />}
+              variant="outlined"
+            >
               Log In
             </StyledButton>
           </form>
           <p id="checkAcc">Don't have an account ?</p>
           <Link to="/create-account">
-            <StyledButton id="signup-btn" size="large">
+            <StyledButton id="signup-btn" size="large" variant="outlined">
               Sign Up
             </StyledButton>
           </Link>
