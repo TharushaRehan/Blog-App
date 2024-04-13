@@ -3,7 +3,6 @@ import admin from "firebase-admin";
 import { MongoClient } from "mongodb";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import connectDB from "./db.js";
 
 dotenv.config();
 
@@ -164,7 +163,7 @@ add the recieved comment to the database with the user's email address */
     const Article = mongoose.model("Article", articleSchema);
 
     /* add articles to the database
-get the recieved data from the frontend, create new object from the article model with the data
+      get the recieved data from the frontend, create new object from the article model with the data
 by default likes,comments will be set to default values
 then insert to the database*/
     app.post("/api/articles/addarticle", async (req, res) => {
