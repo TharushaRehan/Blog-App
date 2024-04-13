@@ -1,165 +1,389 @@
 import express from "express";
 import admin from "firebase-admin";
-import fs from "fs";
-import { db, connectToDB } from "./db.js";
+import { MongoClient } from "mongodb";
 import mongoose from "mongoose";
+import dotenv from "dotenv";
+import connectDB from "./db.js";
 
-const credentials = JSON.parse(fs.readFileSync("./credentials.json"));
+dotenv.config();
 
-admin.initializeApp({
-  credential: admin.credential.cert(credentials),
-});
 const app = express();
+
 app.use(express.json());
 
-//middleware
-app.use(async (req, res, next) => {
-  const { authtoken } = req.headers;
+const PORT = 8000;
+const mongoURI = process.env.ATLAS_URI;
 
-  if (authtoken) {
-    try {
-      req.user = await admin.auth().verifyIdToken(authtoken);
-    } catch (e) {
-      return res.sendStatus(400);
-    }
-  }
-  req.user = req.user || {};
+const firebaseConfig = {
+  type: process.env.FIREBASE_TYPE,
+  project_id: process.env.FIREBASE_PROJECT_ID,
+  private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+  private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/gm, "\n"),
+  client_email: process.env.FIREBASE_CLIENT_EMAIL,
+  client_id: process.env.FIREBASE_CLIENT_ID,
+  auth_uri: process.env.FIREBASE_AUTH_URI,
+  token_uri: process.env.FIREBASE_TOKEN_URI,
+  auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_x509_CERT_URL,
+  client_x509_cert_url: process.env.FIREBASE_CLIENT_x509_CERT_URL,
+  universe_domain: process.env.FIREBASE_UNIVERSE_DOMAIN,
+};
 
-  next();
-});
+// Connect to MongoDB
+MongoClient.connect(mongoURI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+  .then((client) => {
+    admin.initializeApp({
+      credential: admin.credential.cert(firebaseConfig),
+    });
 
-/*get all the article details from the mongodb database and send it to the frontend */
-app.get("/api/articles/getall", async (req, res) => {
-  const allArticles = await db.collection("articles").find().toArray();
-  if (allArticles) {
-    res.json(allArticles);
-  } else {
-    res.sendStatus(404);
-  }
-});
+    const db = client.db("blog-db");
 
-/* return the article data to the frontend if that exists */
-app.get("/api/articles/:name", async (req, res) => {
-  const { name } = req.params;
-  const { uid } = req.user;
-  //check if there is a article with the given name
-  // if yes check the sign in user can like the article or not
-  const article = await db.collection("articles").findOne({ name });
-  if (article) {
-    const upvoteIds = await db
-      .collection("articles")
-      .distinct("upvoteIds", { name: name });
-    article.canUpvote = upvoteIds.includes(uid);
+    //middleware
+    app.use(async (req, res, next) => {
+      const { authtoken } = req.headers;
 
-    res.json(article);
-  } else {
-    res.sendStatus(404);
-  }
-});
+      if (authtoken) {
+        try {
+          req.user = await admin.auth().verifyIdToken(authtoken);
+        } catch (e) {
+          return res.sendStatus(400);
+        }
+      }
+      req.user = req.user || {};
 
-// middleware
-// check if there is signed in user, if yes, the make that other api requests available
-app.use((req, res, next) => {
-  if (req.user) {
-    next();
-  } else {
-    res.sendStatus(401);
-  }
-});
+      next();
+    });
 
-/* update likes for the article
+    /*get all the article details from the mongodb database and send it to the frontend */
+    app.get("/api/articles/getall", async (req, res) => {
+      const allArticles = await db.collection("articles").find().toArray();
+      if (allArticles) {
+        res.json(allArticles);
+      } else {
+        res.sendStatus(404);
+      }
+    });
+
+    /* return the article data to the frontend if that exists */
+    app.get("/api/articles/:name", async (req, res) => {
+      const { name } = req.params;
+      const { uid } = req.user;
+      //check if there is a article with the given name
+      // if yes check the sign in user can like the article or not
+      const article = await db.collection("articles").findOne({ name });
+      if (article) {
+        const upvoteIds = await db
+          .collection("articles")
+          .distinct("upvoteIds", { name: name });
+        article.canUpvote = upvoteIds.includes(uid);
+
+        res.json(article);
+      } else {
+        res.sendStatus(404);
+      }
+    });
+
+    // middleware
+    // check if there is signed in user, if yes, the make that other api requests available
+    app.use((req, res, next) => {
+      if (req.user) {
+        next();
+      } else {
+        res.sendStatus(401);
+      }
+    });
+
+    /* update likes for the article
 first check if the signed in user's id is already in likes array
 if not increase the likes by 1 and add the user's uid to the array */
-app.put("/api/articles/:name/upvote", async (req, res) => {
-  const { name } = req.params;
-  const { uid } = req.user;
-  const article = await db.collection("articles").findOne({ name });
-  if (article) {
-    const upvoteIds = await db
-      .collection("articles")
-      .distinct("upvoteIds", { name: name });
-    const canUpvote = uid && !upvoteIds.includes(uid);
-    if (canUpvote) {
-      try {
-        await db.collection("articles").updateOne(
-          { name },
-          {
-            $inc: { upvotes: 1 },
-            $push: { upvoteIds: uid },
+    app.put("/api/articles/:name/upvote", async (req, res) => {
+      const { name } = req.params;
+      const { uid } = req.user;
+      const article = await db.collection("articles").findOne({ name });
+      if (article) {
+        const upvoteIds = await db
+          .collection("articles")
+          .distinct("upvoteIds", { name: name });
+        const canUpvote = uid && !upvoteIds.includes(uid);
+        if (canUpvote) {
+          try {
+            await db.collection("articles").updateOne(
+              { name },
+              {
+                $inc: { upvotes: 1 },
+                $push: { upvoteIds: uid },
+              }
+            );
+          } catch (err) {
+            console.log(err);
           }
-        );
-      } catch (err) {
-        console.log(err);
+        }
+        const updatedArticle = await db
+          .collection("articles")
+          .findOne({ name });
+        res.json(updatedArticle);
+      } else {
+        res.send("That article doesn't exist.");
       }
-    }
-    const updatedArticle = await db.collection("articles").findOne({ name });
-    res.json(updatedArticle);
-  } else {
-    res.send("That article doesn't exist.");
-  }
-});
+    });
 
-/* add comments to the article
+    /* add comments to the article
 add the recieved comment to the database with the user's email address */
-app.post("/api/articles/:name/comments", async (req, res) => {
-  const { name } = req.params;
-  const { text } = req.body;
-  const { email } = req.user;
+    app.post("/api/articles/:name/comments", async (req, res) => {
+      const { name } = req.params;
+      const { text } = req.body;
+      const { email } = req.user;
 
-  await db.collection("articles").updateOne(
-    { name },
-    {
-      $push: { comments: { postedBy: email, text } },
-    }
-  );
-  const article = await db.collection("articles").findOne({ name });
+      await db.collection("articles").updateOne(
+        { name },
+        {
+          $push: { comments: { postedBy: email, text } },
+        }
+      );
+      const article = await db.collection("articles").findOne({ name });
 
-  if (article) {
-    res.json(article);
-  } else {
-    res.send("That article doesn't exist.");
-  }
-});
+      if (article) {
+        res.json(article);
+      } else {
+        res.send("That article doesn't exist.");
+      }
+    });
 
-// define article scheme
-const articleSchema = new mongoose.Schema({
-  uid: { type: String, default: 0 },
-  name: { type: String, required: true },
-  title: { type: String, required: true },
-  content: { type: String, required: true },
-  upvotes: { type: Number, default: 0 },
-  comments: { type: Array, default: [] },
-  upvoteIds: { type: Array, default: [] },
-});
-const Article = mongoose.model("Article", articleSchema);
+    // define article scheme
+    const articleSchema = new mongoose.Schema({
+      uid: { type: String, default: 0 },
+      name: { type: String, required: true },
+      title: { type: String, required: true },
+      content: { type: String, required: true },
+      upvotes: { type: Number, default: 0 },
+      comments: { type: Array, default: [] },
+      upvoteIds: { type: Array, default: [] },
+    });
+    const Article = mongoose.model("Article", articleSchema);
 
-/* add articles to the database
+    /* add articles to the database
 get the recieved data from the frontend, create new object from the article model with the data
-by default likes,comments will be set to default values 
+by default likes,comments will be set to default values
 then insert to the database*/
-app.post("/api/articles/addarticle", async (req, res) => {
-  const { name, title, content } = req.body;
-  const { uid } = req.user;
+    app.post("/api/articles/addarticle", async (req, res) => {
+      const { name, title, content } = req.body;
+      const { uid } = req.user;
 
-  const newArticle = new Article({
-    uid,
-    name,
-    title,
-    content,
+      const newArticle = new Article({
+        uid,
+        name,
+        title,
+        content,
+      });
+
+      try {
+        await db.collection("articles").insertOne(newArticle);
+        res.send("Article saved successfully");
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Failed to save article" });
+      }
+    });
+
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Error connecting to MongoDB:", err);
   });
 
-  try {
-    await db.collection("articles").insertOne(newArticle);
-    res.send("Article saved successfully");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to save article" });
-  }
-});
+// import express from "express";
+// import admin from "firebase-admin";
+// import fs from "fs";
+// //import { connectToDb } from "./db.js";
+// import db from "./db.js";
+// import mongoose from "mongoose";
+// import dotenv from "dotenv";
 
-connectToDB(() => {
-  console.log("Successfully connected to the database.");
-  app.listen(8000, () => {
-    console.log("Server is running on port 8000");
-  });
-});
+// dotenv.config();
+
+// //const credentials = JSON.parse(fs.readFileSync("./credentials.json"));
+
+// const firebaseConfig = {
+//   type: process.env.FIREBASE_TYPE,
+//   project_id: process.env.FIREBASE_PROJECT_ID,
+//   private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+//   private_key: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/gm, "\n"),
+//   client_email: process.env.FIREBASE_CLIENT_EMAIL,
+//   client_id: process.env.FIREBASE_CLIENT_ID,
+//   auth_uri: process.env.FIREBASE_AUTH_URI,
+//   token_uri: process.env.FIREBASE_TOKEN_URI,
+//   auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_x509_CERT_URL,
+//   client_x509_cert_url: process.env.FIREBASE_CLIENT_x509_CERT_URL,
+//   universe_domain: process.env.FIREBASE_UNIVERSE_DOMAIN,
+// };
+
+// admin.initializeApp({
+//   credential: admin.credential.cert(firebaseConfig),
+// });
+
+// const app = express();
+// app.use(express.json());
+
+// //const db = await connectToDb();
+
+// //middleware
+// app.use(async (req, res, next) => {
+//   const { authtoken } = req.headers;
+
+//   if (authtoken) {
+//     try {
+//       req.user = await admin.auth().verifyIdToken(authtoken);
+//     } catch (e) {
+//       return res.sendStatus(400);
+//     }
+//   }
+//   req.user = req.user || {};
+
+//   next();
+// });
+
+// /*get all the article details from the mongodb database and send it to the frontend */
+// app.get("/api/articles/getall", async (req, res) => {
+//   const allArticles = await db.collection("articles").find().toArray();
+//   if (allArticles) {
+//     res.json(allArticles);
+//   } else {
+//     res.sendStatus(404);
+//   }
+// });
+
+// /* return the article data to the frontend if that exists */
+// app.get("/api/articles/:name", async (req, res) => {
+//   const { name } = req.params;
+//   const { uid } = req.user;
+//   //check if there is a article with the given name
+//   // if yes check the sign in user can like the article or not
+//   const article = await db.collection("articles").findOne({ name });
+//   if (article) {
+//     const upvoteIds = await db
+//       .collection("articles")
+//       .distinct("upvoteIds", { name: name });
+//     article.canUpvote = upvoteIds.includes(uid);
+
+//     res.json(article);
+//   } else {
+//     res.sendStatus(404);
+//   }
+// });
+
+// // middleware
+// // check if there is signed in user, if yes, the make that other api requests available
+// app.use((req, res, next) => {
+//   if (req.user) {
+//     next();
+//   } else {
+//     res.sendStatus(401);
+//   }
+// });
+
+// /* update likes for the article
+// first check if the signed in user's id is already in likes array
+// if not increase the likes by 1 and add the user's uid to the array */
+// app.put("/api/articles/:name/upvote", async (req, res) => {
+//   const { name } = req.params;
+//   const { uid } = req.user;
+//   const article = await db.collection("articles").findOne({ name });
+//   if (article) {
+//     const upvoteIds = await db
+//       .collection("articles")
+//       .distinct("upvoteIds", { name: name });
+//     const canUpvote = uid && !upvoteIds.includes(uid);
+//     if (canUpvote) {
+//       try {
+//         await db.collection("articles").updateOne(
+//           { name },
+//           {
+//             $inc: { upvotes: 1 },
+//             $push: { upvoteIds: uid },
+//           }
+//         );
+//       } catch (err) {
+//         console.log(err);
+//       }
+//     }
+//     const updatedArticle = await db.collection("articles").findOne({ name });
+//     res.json(updatedArticle);
+//   } else {
+//     res.send("That article doesn't exist.");
+//   }
+// });
+
+// /* add comments to the article
+// add the recieved comment to the database with the user's email address */
+// app.post("/api/articles/:name/comments", async (req, res) => {
+//   const { name } = req.params;
+//   const { text } = req.body;
+//   const { email } = req.user;
+
+//   await db.collection("articles").updateOne(
+//     { name },
+//     {
+//       $push: { comments: { postedBy: email, text } },
+//     }
+//   );
+//   const article = await db.collection("articles").findOne({ name });
+
+//   if (article) {
+//     res.json(article);
+//   } else {
+//     res.send("That article doesn't exist.");
+//   }
+// });
+
+// // define article scheme
+// const articleSchema = new mongoose.Schema({
+//   uid: { type: String, default: 0 },
+//   name: { type: String, required: true },
+//   title: { type: String, required: true },
+//   content: { type: String, required: true },
+//   upvotes: { type: Number, default: 0 },
+//   comments: { type: Array, default: [] },
+//   upvoteIds: { type: Array, default: [] },
+// });
+// const Article = mongoose.model("Article", articleSchema);
+
+// /* add articles to the database
+// get the recieved data from the frontend, create new object from the article model with the data
+// by default likes,comments will be set to default values
+// then insert to the database*/
+// app.post("/api/articles/addarticle", async (req, res) => {
+//   const { name, title, content } = req.body;
+//   const { uid } = req.user;
+
+//   const newArticle = new Article({
+//     uid,
+//     name,
+//     title,
+//     content,
+//   });
+
+//   try {
+//     await db.collection("articles").insertOne(newArticle);
+//     res.send("Article saved successfully");
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Failed to save article" });
+//   }
+// });
+
+// // connectToDB(() => {
+// //   console.log("Successfully connected to the database.");
+// //   app.listen(8000, () => {
+// //     console.log("Server is running on port 8000");
+// //   });
+// // });
+
+// const PORT = 8000;
+
+// app.listen(PORT, () => {
+//   console.log("Server is running on port 8000");
+// });
